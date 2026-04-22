@@ -1,0 +1,11 @@
+# ninja log v7
+75	383	1771935307438950666	qt1_autogen/timestamp	39e4fad248acdd2e
+75	383	1771935307438950666	qt1_autogen/mocs_compilation.cpp	39e4fad248acdd2e
+75	383	1771935307438950666	/home/mifugi/qt1/build/Desktop-Debug/qt1_autogen/timestamp	39e4fad248acdd2e
+75	383	1771935307438950666	/home/mifugi/qt1/build/Desktop-Debug/qt1_autogen/mocs_compilation.cpp	39e4fad248acdd2e
+383	2230	1771935307449950691	CMakeFiles/qt1.dir/qt1_autogen/mocs_compilation.cpp.o	5cb14f1db90407d5
+383	2284	1771935307450664280	CMakeFiles/qt1.dir/main.cpp.o	d5ccf77472a0ab0c
+383	2692	1771935307450893809	CMakeFiles/qt1.dir/mainwindow.cpp.o	1e17706fa5583cf6
+2692	3037	1771935309758954034	qt1	a0b446794c7185c7
+101	468	1772448941507966707	build.ninja	c050aa31fdd519ac
+3	412	1772448941542894066	qt1	1626ebfb9e697087

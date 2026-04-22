@@ -1,0 +1,8 @@
+print(f"data1>data2 | {data1}>{data2}: {data1>data2}")
+    print(f"data1>data3 | {data1}>{data3}: {data1>data3}")
+    print(f"data1>data4 | {data1}>{data4}: {data1>data4}")
+    print(f"data1>data5 | {data1}>{data5}: {data1>data5}")
+    print(f"data2>data1 | {data1}>{data5}: {data2>data1}")
+    print(f"data3>data1 | {data3}>{data1}: {data3>data1}")
+    print(f"data4>data1 | {data4}>{data1}: {data4>data1}")
+    print(f"data5>data1 | {data5}>{data1}: {data5>data1}")

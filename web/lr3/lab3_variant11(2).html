@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Лабораторная работа 3 — Вариант 11</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h2 { margin-top: 30px; }
+    textarea { font-family: monospace; }
+    #matrix-output { margin-top: 10px; }
+    table { border-collapse: collapse; margin-top: 10px; }
+    td { border: 1px solid #888; padding: 6px 10px; text-align: center; min-width: 40px; }
+    .result-box { margin-top: 10px; padding: 10px; background: #f0f0f0; border-left: 4px solid #555; }
+    canvas { border: 1px dashed black; display: block; margin-top: 10px; }
+    button { margin: 5px 2px; padding: 6px 14px; cursor: pointer; }
+    label { display: inline-block; width: 220px; }
+  </style>
+</head>
+<body>
+
+<h1>Вариант 11</h1>
+
+<h2>Базовая часть</h2>
+<p>В матрице найти в каждой строке наибольший элемент, а потом среди них найти наименьший (минимакс).</p>
+
+<div>
+  <label>Количество строк (n):</label>
+  <input type="number" id="rows" value="4" min="1" max="20">
+</div>
+<div>
+  <label>Количество столбцов (m):</label>
+  <input type="number" id="cols" value="5" min="1" max="20">
+</div>
+<div style="margin-top:8px">
+  <label>Диапазон случайных значений:</label>
+  от <input type="number" id="rmin" value="-10" style="width:60px">
+  до <input type="number" id="rmax" value="20" style="width:60px">
+</div>
+<button onclick="generateMatrix()">Сгенерировать матрицу</button>
+<button onclick="solveMinMax()">Найти минимакс</button>
+
+<div id="matrix-output"></div>
+<div id="minimax-result" class="result-box" style="display:none"></div>
+
+<script>
+let matrix = [];
+
+function generateMatrix() {
+  const n = parseInt(document.getElementById('rows').value);
+  const m = parseInt(document.getElementById('cols').value);
+  const rmin = parseInt(document.getElementById('rmin').value);
+  const rmax = parseInt(document.getElementById('rmax').value);
+
+  matrix = Array.from({ length: n }, () =>
+    Array.from({ length: m }, () => Math.floor(Math.random() * (rmax - rmin + 1)) + rmin)
+  );
+
+  renderMatrix();
+  document.getElementById('minimax-result').style.display = 'none';
+}
+
+function renderMatrix() {
+  const out = document.getElementById('matrix-output');
+  let html = '<table>';
+  matrix.forEach(row => {
+    html += '<tr>' + row.map(v => `<td>${v}</td>`).join('') + '</tr>';
+  });
+  html += '</table>';
+  out.innerHTML = html;
+}
+
+function solveMinMax() {
+  if (matrix.length === 0) {
+    alert('Сначала сгенерируйте матрицу.');
+    return;
+  }
+
+  const rowMaxes = matrix.map(row => Math.max(...row));
+  const minimax = Math.min(...rowMaxes);
+
+  const resultDiv = document.getElementById('minimax-result');
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML =
+    '<strong>Максимумы по строкам:</strong> [' + rowMaxes.join(', ') + ']<br>' +
+    '<strong>Минимакс (наименьший из максимумов):</strong> ' + minimax;
+
+  highlightMinimax(rowMaxes, minimax);
+}
+
+function highlightMinimax(rowMaxes, minimax) {
+  const table = document.querySelector('#matrix-output table');
+  const rows = table.querySelectorAll('tr');
+
+  rows.forEach((tr, i) => {
+    const cells = tr.querySelectorAll('td');
+    cells.forEach(td => {
+      td.style.background = '';
+      td.style.fontWeight = '';
+    });
+    const maxVal = rowMaxes[i];
+    cells.forEach(td => {
+      if (parseInt(td.textContent) === maxVal) {
+        td.style.background = maxVal === minimax ? '#f99' : '#bdf';
+        td.style.fontWeight = 'bold';
+      }
+    });
+  });
+}
+</script>
+
+<hr>
+
+<h2>Расширенная часть</h2>
+<p>
+  Матрица из синих и зелёных квадратов с чередующимися столбцами.
+  Чётные строки — полные (все столбцы). Нечётные строки — только левая половина столбцов.
+  Столбцы чередуются: синий, зелёный, синий, зелёный...
+</p>
+
+<div>
+  <label>Строк (n):</label>
+  <input type="number" id="rows2" value="6" min="1" max="20">
+</div>
+<div>
+  <label>Столбцов (m):</label>
+  <input type="number" id="cols2" value="10" min="2" max="30">
+</div>
+<div>
+  <label>Размер квадрата (пикселей):</label>
+  <input type="number" id="cell2" value="35" min="10" max="80">
+</div>
+<button onclick="drawFigure()">Нарисовать</button>
+<button onclick="clearCanvas()">Очистить</button>
+
+<canvas id="drawingCanvas" width="700" height="400"></canvas>
+
+<script>
+function clearCanvas() {
+  const canvas = document.getElementById('drawingCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function buildMatrix(n, m) {
+  const half = Math.ceil(m / 2);
+  return Array.from({ length: n }, (_, i) => {
+    const fullRow = i % 2 === 0;
+    return Array.from({ length: m }, (_, j) => {
+      if (!fullRow && j >= half) return 0;
+      return j % 2 === 0 ? 1 : 2;
+    });
+  });
+}
+
+function drawFigure() {
+  const n = parseInt(document.getElementById('rows2').value);
+  const m = parseInt(document.getElementById('cols2').value);
+  const cell = parseInt(document.getElementById('cell2').value);
+  const canvas = document.getElementById('drawingCanvas');
+  const ctx = canvas.getContext('2d');
+  const gap = 4;
+
+  canvas.width = m * cell + 40;
+  canvas.height = n * cell + 40;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const ox = 20;
+  const oy = 20;
+  const matrix = buildMatrix(n, m);
+
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < m; j++) {
+      const val = matrix[i][j];
+      if (val === 0) continue;
+      ctx.fillStyle = val === 1 ? '#1a5fa8' : '#6dbf45';
+      ctx.fillRect(ox + j * cell, oy + i * cell, cell - gap, cell - gap);
+    }
+  }
+}
+</script>
+
+</body>
+</html>

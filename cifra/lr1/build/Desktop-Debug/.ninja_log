@@ -1,0 +1,9 @@
+# ninja log v5
+5	1276	1757325721868381844	lr1_autogen/timestamp	a7855707e6ba133
+5	1276	1757325721868381844	lr1_autogen/mocs_compilation.cpp	a7855707e6ba133
+5	1276	1757325721868381844	/home/mifugi/lr1/build/Desktop-Debug/lr1_autogen/timestamp	a7855707e6ba133
+5	1276	1757325721868381844	/home/mifugi/lr1/build/Desktop-Debug/lr1_autogen/mocs_compilation.cpp	a7855707e6ba133
+1281	14970	1757325735507216933	CMakeFiles/lr1.dir/lr1_autogen/mocs_compilation.cpp.o	a3eb58914aa1d2e9
+1282	14987	1757325735540216533	CMakeFiles/lr1.dir/main.cpp.o	1f8de5118da56a98
+1283	15047	1757325735607215723	CMakeFiles/lr1.dir/mainwindow.cpp.o	f739fc67297ba37b
+15047	16012	1757325736613203557	lr1	3d96a3c0cd6f304c

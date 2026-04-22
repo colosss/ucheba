@@ -1,0 +1,12 @@
+
+
+sbcl --load 2.lisp
+
+(setq map'((a 0 (b))
+            (b 0 (a c d))
+            (c 0 (b d))
+            (d 0 (b c))
+    )
+)
+
+(print (r map))

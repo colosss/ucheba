@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Ранний период конкуренции браузеров 1990-2000-е годы">
+    <meta name="keywords" content="браузеры, Netscape, Internet Explorer, война браузеров, 1990-е">
+    <meta name="author" content="Студент">
+    <title>Ранний период конкуренции браузеров</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <style>
+        main { padding: 10px 20px; }
+        aside {
+            background-color: #eef4ff;
+            border: 1px solid #aac0e8;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .dropdown-section { margin: 16px 0; }
+        #early-war-table { width: 90%; margin: 0 auto; }
+        #early-war-table td.img-cell {
+            text-align: center;
+            vertical-align: middle;
+            background-color: #f0f0f0;
+        }
+        .period-label { font-weight: bold; color: #0f3460; }
+        h1.page-title {
+            font-size: 22px;
+            border-bottom: 3px solid #0f3460;
+            padding-bottom: 6px;
+        }
+        ol.main-list > li { margin-bottom: 6px; }
+
+        #js-panel {
+            background: #f0f4ff;
+            border: 2px solid #0f3460;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin: 16px 0;
+        }
+        #js-panel h3 { margin: 0 0 10px 0; color: #0f3460; font-size: 15px; }
+        #js-panel button {
+            margin: 4px 4px 4px 0;
+            padding: 6px 12px;
+            background-color: #1a1a2e;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        #js-panel button:hover { background-color: #0f3460; }
+        #js-panel input {
+            padding: 5px 8px;
+            border: 1px solid #aac0e8;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-right: 4px;
+        }
+        #clock-display {
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            letter-spacing: 4px;
+        }
+        #scroll-info {
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            background: rgba(26,26,46,0.85);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            display: none;
+        }
+        #mouse-pos {
+            font-size: 13px;
+            color: #555;
+            margin-top: 6px;
+        }
+    </style>
+
+    <script>
+        var showAuthor = function() {
+            var els = document.getElementsByTagName("address");
+            var info = els.length > 0 ? els[0].innerText : "Кочнев Сергей, группа 4431";
+            alert("Автор сайта: " + info);
+        };
+
+        var startClock = function() {
+            var tick = function() {
+                var els = document.getElementsByTagName("div");
+                var clockEl = null;
+                for (var i = 0; i < els.length; i++) {
+                    if (els[i].id === "clock-display") { clockEl = els[i]; break; }
+                }
+                if (!clockEl) return;
+                var now = new Date();
+                var h = String(now.getHours()).padStart(2, "0");
+                var m = String(now.getMinutes()).padStart(2, "0");
+                var s = String(now.getSeconds()).padStart(2, "0");
+                clockEl.innerText = h + ":" + m + ":" + s;
+                clockEl.style.color = (now.getMinutes() % 2 === 0) ? "red" : "blue";
+            };
+            tick();
+            setInterval(tick, 1000);
+        };
+
+        var addTableRow = function() {
+            var inputs = document.getElementsByTagName("input");
+            var period = inputs[0].value || "";
+            var browser = inputs[1].value || "";
+            var event = inputs[2].value || "";
+
+            var tables = document.getElementsByTagName("table");
+            var targetTable = null;
+            for (var i = 0; i < tables.length; i++) {
+                if (tables[i].id === "early-war-table") { targetTable = tables[i]; break; }
+            }
+            if (!targetTable) return;
+
+            var tbody = targetTable.getElementsByTagName("tbody")[0];
+            var tr = document.createElement("tr");
+            tr.setAttribute("data-added", "true");
+
+            var buildCell = function(text) {
+                var td = document.createElement("td");
+                td.innerText = text;
+                return td;
+            };
+
+            tr.appendChild(buildCell(period));
+            tr.appendChild(buildCell(browser));
+            tr.appendChild(buildCell(event));
+            var tdImg = document.createElement("td");
+            tdImg.className = "img-cell";
+            tdImg.innerText = "—";
+            tr.appendChild(tdImg);
+            tbody.appendChild(tr);
+
+            for (var j = 0; j < inputs.length; j++) {
+                if (j < 3) inputs[j].value = "";
+            }
+        };
+
+        var deleteAddedRows = function() {
+            var tables = document.getElementsByTagName("table");
+            var targetTable = null;
+            for (var i = 0; i < tables.length; i++) {
+                if (tables[i].id === "early-war-table") { targetTable = tables[i]; break; }
+            }
+            if (!targetTable) return;
+            var rows = targetTable.getElementsByTagName("tr");
+            var toRemove = [];
+            for (var i = 0; i < rows.length; i++) {
+                if (rows[i].getAttribute("data-added") === "true") toRemove.push(rows[i]);
+            }
+            toRemove.forEach(function(r) { r.parentNode.removeChild(r); });
+        };
+
+        var changeColor = function(color) {
+            var els = document.getElementsByTagName("h1");
+            for (var i = 0; i < els.length; i++) {
+                els[i].style.color = color;
+            }
+        };
+
+        var changeSize = function(size) {
+            var els = document.getElementsByTagName("p");
+            for (var i = 0; i < els.length; i++) {
+                els[i].style.fontSize = size;
+            }
+        };
+
+        var applyStyle = function(tag, prop, value) {
+            var els = document.getElementsByTagName(tag);
+            for (var i = 0; i < els.length; i++) {
+                els[i].style[prop] = value;
+            }
+        };
+
+        var addListItem = function() {
+            var inputs = document.getElementsByTagName("input");
+            var val = inputs[3].value;
+            if (!val) return;
+            var lists = document.getElementsByTagName("ul");
+            var targetList = null;
+            for (var i = 0; i < lists.length; i++) {
+                if (lists[i].className === "dropdown-list") { targetList = lists[i]; break; }
+            }
+            if (!targetList) return;
+            var li = document.createElement("li");
+            li.innerText = val;
+            li.setAttribute("data-added-li", "true");
+            targetList.appendChild(li);
+            inputs[3].value = "";
+        };
+
+        var removeListItem = function() {
+            var lists = document.getElementsByTagName("ul");
+            var targetList = null;
+            for (var i = 0; i < lists.length; i++) {
+                if (lists[i].className === "dropdown-list") { targetList = lists[i]; break; }
+            }
+            if (!targetList) return;
+            var items = targetList.getElementsByTagName("li");
+            for (var i = items.length - 1; i >= 0; i--) {
+                if (items[i].getAttribute("data-added-li") === "true") {
+                    targetList.removeChild(items[i]);
+                    break;
+                }
+            }
+        };
+
+        window.onload = function() {
+            startClock();
+
+            var divs = document.getElementsByTagName("div");
+            for (var i = 0; i < divs.length; i++) {
+                if (divs[i].id === "scroll-info") {
+                    divs[i].style.display = "block";
+                    break;
+                }
+            }
+
+            document.addEventListener("scroll", function() {
+                var divs = document.getElementsByTagName("div");
+                for (var i = 0; i < divs.length; i++) {
+                    if (divs[i].id === "scroll-info") {
+                        divs[i].innerText = "Прокрутка: " + Math.round(window.scrollY) + "px";
+                        break;
+                    }
+                }
+            });
+
+            document.addEventListener("mousemove", function(e) {
+                var divs = document.getElementsByTagName("div");
+                for (var i = 0; i < divs.length; i++) {
+                    if (divs[i].id === "mouse-pos") {
+                        divs[i].innerText = "Мышь: x=" + e.clientX + " y=" + e.clientY;
+                        break;
+                    }
+                }
+            });
+
+            var panels = document.getElementsByTagName("div");
+            for (var i = 0; i < panels.length; i++) {
+                if (panels[i].id === "js-panel") {
+                    panels[i].addEventListener("dblclick", showAuthor);
+                    break;
+                }
+            }
+        };
+    </script>
+</head>
+<body>
+    <header>
+        <h1 align="center">Конкуренция браузеров</h1>
+    </header>
+    <table width="100%" border="0" cellpadding="10" cellspacing="0">
+        <tr>
+            <td width="25%" align="center">
+                <img src="https://kload.ru/kload.svg" width="180" height="60" alt="Логотип" border="0">
+            </td>
+            <td width="75%" align="center">
+                <nav>
+                    <p>
+                        <a href="1.html">Ранний период</a> |
+                        <a href="2.html">Современный период</a> |
+                        <a href="3.html">Источники</a>
+                    </p>
+                </nav>
+            </td>
+        </tr>
+    </table>
+    <table width="100%" border="0" cellpadding="10" cellspacing="10">
+        <tr>
+            <td width="25%" valign="top">
+                <aside>
+                    <h3 align="center">Ключевые даты</h3>
+                    <p><time datetime="1994">1994</time> — Netscape Navigator.</p>
+                    <p><time datetime="1995">1995</time> — Internet Explorer.</p>
+                    <p><time datetime="1998">1998</time> — открытый код Netscape.</p>
+                    <p><q>Браузерная война изменила веб.</q></p>
+                    <address>Кочнев Сергей, группа 4431</address>
+                </aside>
+
+                <div class="dropdown-section">
+                    <div class="dropdown-wrapper">
+                        <span class="dropdown-label">▼ Ключевые браузеры эпохи</span>
+                        <ul class="dropdown-list">
+                            <li>Mosaic (1993)</li>
+                            <li>Netscape Navigator (1994)</li>
+                            <li>Internet Explorer (1995)</li>
+                            <li>Mozilla Phoenix (2002)</li>
+                            <li>Firefox 1.0 (2004)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="js-panel">
+                    <h3>Управление (двойной клик на блок — автор)</h3>
+
+                    <div id="clock-display">00:00:00</div>
+
+                    <hr style="border-color:#aac0e8; margin:10px 0;">
+
+                    <button onclick="showAuthor()">Показать автора</button>
+
+                    <hr style="border-color:#aac0e8; margin:10px 0;">
+
+                    <input type="text" placeholder="Период" style="width:80px;">
+                    <input type="text" placeholder="Браузер" style="width:90px;">
+                    <input type="text" placeholder="Событие" style="width:110px;">
+                    <br>
+                    <button onclick="addTableRow()">Добавить строку</button>
+                    <button onclick="deleteAddedRows()">Удалить добавленные</button>
+
+                    <hr style="border-color:#aac0e8; margin:10px 0;">
+
+                    <button onclick="changeColor('#cc0000')">Заголовки → красный</button>
+                    <button onclick="changeColor('#1a1a2e')">Заголовки → исходный</button>
+                    <br>
+                    <button onclick="changeSize('18px')">Текст крупнее</button>
+                    <button onclick="changeSize('14px')">Текст исходный</button>
+
+                    <hr style="border-color:#aac0e8; margin:10px 0;">
+
+                    <button onclick="applyStyle('td', 'backgroundColor', '#fffde7')">Ячейки → жёлтые</button>
+                    <button onclick="applyStyle('td', 'backgroundColor', '')">Ячейки → исходные</button>
+
+                    <hr style="border-color:#aac0e8; margin:10px 0;">
+
+                    <input type="text" placeholder="Новый пункт списка" style="width:140px;">
+                    <button onclick="addListItem()">Добавить пункт</button>
+                    <button onclick="removeListItem()">Удалить последний</button>
+
+                    <div id="mouse-pos"></div>
+                </div>
+            </td>
+            <td width="75%" valign="top">
+                <main>
+                    <h1 class="page-title" align="center">Ранний период конкуренции браузеров 1990-е — 2000-е годы</h1>
+                    <p>В 1990-е годы началась конкуренция браузеров. Первый графический браузер Mosaic появился в 1993 году. В 1994 году сотрудники создали компанию Netscape и выпустили Netscape Navigator. К середине 1995 года <strong>Netscape Navigator</strong> занимал более 80 процентов рынка. Браузер поддерживал таблицы и фреймы. Это позволило сайтам становиться сложнее. <em>Microsoft</em> увидела угрозу и выпустила Internet Explorer 1 в 1995 году. Версия 2 вышла скоро после. Internet Explorer поставлялся бесплатно с Windows 95. Это было главным преимуществом.</p>
+                    <p>В 1996 году вышла Internet Explorer 3. Она поддерживала CSS лучше. Netscape Navigator 3 тоже обновился. Конкуренция стала жесткой. Microsoft добавляла функции быстро. В 1997 году Internet Explorer 4 получил интеграцию с Windows. Доля Netscape начала падать. К 1998 году Internet Explorer имел около 50 процентов. Netscape выпустила версию 4 но она была медленнее. В 1998 году компания Netscape опубликовала исходный код браузера. Это событие привело к созданию проекта Mozilla. <dfn>Браузерная война</dfn> первой фазы закончилась победой Microsoft. К 2001 году Internet Explorer имел более 90 процентов рынка.</p>
+                    <p>В 1995 году Брендан Эйх создал язык JavaScript за 10 дней. Он работал в Netscape Navigator. Это изменило веб. Сайты стали интерактивными. Internet Explorer тоже добавил поддержку. Но реализации отличались. Разработчикам приходилось писать код дважды. Антимонопольный процесс против Microsoft начался в 1998 году. Суд решил что bundling был нарушением. Но Internet Explorer уже победил. Netscape была куплена AOL в 1998 году за 4 миллиарда долларов. Проект Mozilla продолжил работу. В 2002 году вышел Mozilla Phoenix позже Firefox.</p>
+                    <p>Firefox 1.0 вышел в 2004 году. Он имел блокирование рекламы и вкладки. Это было ново. Internet Explorer не имел вкладок до 2006 года. Период 1990-2000-е показал как одна компания может доминировать за счет операционной системы. Netscape потеряла позиции из-за бесплатного распространения конкурента. Код JavaScript стал стандартом ECMAScript. Многие технологии браузеров появились именно тогда. Дополнительно в этот период браузеры добавили поддержку плагинов. Flash и Java работали в обоих. Но безопасность была слабой. Firefox начал возвращать конкуренцию в конце 2000-х но основные события первой войны завершились к 2002 году. Таким образом ранний период заложил основы современной конкуренции браузеров где интеграция с системой и скорость стали ключевыми.</p>
+
+                    <hr class="section-hr">
+                    <h2 align="center">Этапы первой войны браузеров</h2>
+
+                    <div class="highlight-box">
+                        <p style="font-size: 14px; color: rgb(30, 60, 120); margin: 0;">Таблица охватывает события 1994–1999 годов — период наиболее острой конкуренции между Netscape и Microsoft.</p>
+                    </div>
+
+                    <table id="early-war-table" border="2" cellpadding="8" cellspacing="3">
+                        <caption align="top"><strong>Хронология событий 1990–2000-е</strong></caption>
+                        <colgroup>
+                            <col width="20%">
+                            <col width="20%">
+                            <col width="35%">
+                            <col width="25%">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Период</th>
+                                <th>Браузер</th>
+                                <th>Событие</th>
+                                <th>Иллюстрация</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td rowspan="3" class="period-label">1994–1996</td>
+                                <td>Netscape Navigator</td>
+                                <td>Выпуск и 80 процентов рынка</td>
+                                <td class="img-cell" rowspan="3">
+                                    <img src="https://picsum.photos/id/1015/160/100" width="160" height="100" alt="Ранние браузеры" class="filtered">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Internet Explorer</td>
+                                <td>Версия 1 и 2, бесплатная с Windows</td>
+                            </tr>
+                            <tr>
+                                <td>Netscape Navigator</td>
+                                <td>Добавлены фреймы и таблицы</td>
+                            </tr>
+                            <tr>
+                                <td class="period-label">1997–1999</td>
+                                <td>Internet Explorer</td>
+                                <td>Версия 4, интеграция с ОС, победа в доле</td>
+                                <td class="img-cell">
+                                    <img src="https://picsum.photos/id/201/160/100" width="160" height="100" alt="IE победа" class="filtered">
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" align="center">Данные только раннего периода без повторов</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <hr class="section-hr">
+
+                    <ol class="main-list" type="1" start="1">
+                        <li>Начало конкуренции
+                            <ol type="a">
+                                <li>Выпуск Netscape Navigator</li>
+                                <li>Появление Internet Explorer</li>
+                            </ol>
+                        </li>
+                        <li>Борьба за рынок
+                            <ol type="a">
+                                <li>Bundling с Windows</li>
+                                <li>Антимонопольный иск</li>
+                            </ol>
+                        </li>
+                        <li>Открытый код
+                            <ol type="a">
+                                <li>Публикация кода Netscape</li>
+                                <li>Создание Mozilla</li>
+                            </ol>
+                        </li>
+                    </ol>
+
+                    <hr class="section-hr">
+
+                    <p align="center">
+                        <img src="https://picsum.photos/id/1015/280/180" width="280" height="180" alt="Netscape Navigator" border="1">
+                        <img src="https://picsum.photos/id/201/280/180" width="280" height="180" alt="Internet Explorer 1995" border="1">
+                    </p>
+                    <p align="center">
+                        <img src="https://picsum.photos/id/251/280/180" width="280" height="180" alt="Mozilla ранний" border="1">
+                    </p>
+
+                    <hr class="section-hr">
+
+                    <audio controls>
+                        <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg">
+                    </audio>
+                    <video width="400" height="300" controls>
+                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                    </video>
+                    <embed src="https://www.w3schools.com/html/mov_bbb.mp4" width="400" height="300" type="video/mp4">
+                    <picture>
+                        <source srcset="https://picsum.photos/id/1015/600/400" media="(min-width: 600px)">
+                        <img src="https://picsum.photos/id/1015/300/200" width="300" height="200" alt="Браузер 1990-е">
+                    </picture>
+                </main>
+            </td>
+        </tr>
+    </table>
+    <hr class="main-hr">
+    <footer>
+        <p>&copy; 2026 Конкуренция браузеров</p>
+        <address>Кочнев Сергей 4431</address>
+        <p>Обновлено: <time datetime="2026-02-24">24 февраля 2026</time></p>
+    </footer>
+
+    <div id="scroll-info">Прокрутка: 0px</div>
+</body>
+</html>
