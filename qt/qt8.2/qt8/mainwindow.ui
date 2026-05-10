@@ -29,7 +29,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tabProperty">
      <attribute name="title">
@@ -784,8 +784,14 @@
     </property>
     <addaction name="actionSummary"/>
    </widget>
+   <widget class="QMenu" name="menu_4431">
+    <property name="title">
+     <string>Кочнев Сергей 4431</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuReports"/>
+   <addaction name="menu_4431"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionSeed">

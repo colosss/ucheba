@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Анкета посетителя сайта</title>
+<style>
+body {
+    font-family: Arial;
+    background: #f2f2f2;
+    margin: 0;
+}
+.wrapper {
+    width: 760px;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    border: 1px solid #cccccc;
+}
+h1 {
+    text-align: center;
+}
+table {
+    width: 100%;
+}
+th {
+    width: 240px;
+    text-align: right;
+    padding: 8px;
+}
+td {
+    padding: 8px;
+}
+input[type=text], select {
+    width: 300px;
+    padding: 6px;
+}
+button, input[type=submit] {
+    padding: 8px 18px;
+    background: #333333;
+    color: white;
+    border: 0;
+}
+</style>
+<script>
+function checkForm() {
+    var f = document.forms["anketa"];
+    var ok = false;
+    var i = 0;
+
+    if (f.familia.value == "") {
+        alert("Введите фамилию");
+        return false;
+    }
+
+    if (f.name.value == "") {
+        alert("Введите имя");
+        return false;
+    }
+
+    if (f.otchestvo.value == "") {
+        alert("Введите отчество");
+        return false;
+    }
+
+    if (f.device.value == "") {
+        alert("Выберите интересующий раздел");
+        return false;
+    }
+
+    ok = false;
+    for (i = 0; i < f.purpose.length; i = i + 1) {
+        if (f.purpose[i].checked) {
+            ok = true;
+        }
+    }
+
+    if (ok == false) {
+        alert("Выберите хотя бы одну цель");
+        return false;
+    }
+
+    ok = false;
+    for (i = 0; i < f.pay.length; i = i + 1) {
+        if (f.pay[i].checked) {
+            ok = true;
+        }
+    }
+
+    if (ok == false) {
+        alert("Выберите способ оплаты");
+        return false;
+    }
+
+    return true;
+}
+</script>
+</head>
+<body>
+<div class="wrapper">
+<h1>Анкета посетителя сайта о компьютерной технике</h1>
+<hr>
+<form name="anketa" method="POST" action="/cgi-bin/tutor5.py" onsubmit="return checkForm()">
+<input type="hidden" name="theme" value="Компьютерная техника">
+<h3>Заполните форму и нажмите кнопку</h3>
+<table>
+<tr>
+<th>Фамилия:</th>
+<td><input type="text" name="familia"></td>
+</tr>
+<tr>
+<th>Имя:</th>
+<td><input type="text" name="name"></td>
+</tr>
+<tr>
+<th>Отчество:</th>
+<td><input type="text" name="otchestvo"></td>
+</tr>
+<tr>
+<th>Интересующий раздел:</th>
+<td>
+<select name="device">
+<option value="">Выберите</option>
+<option value="Ноутбуки">Ноутбуки</option>
+<option value="Компьютеры">Компьютеры</option>
+<option value="Мониторы">Мониторы</option>
+<option value="Комплектующие">Комплектующие</option>
+</select>
+</td>
+</tr>
+<tr>
+<th>Цель выбора техники:</th>
+<td>
+<input type="checkbox" name="purpose" value="Учеба">Учеба
+<input type="checkbox" name="purpose" value="Работа">Работа
+<input type="checkbox" name="purpose" value="Игры">Игры
+<input type="checkbox" name="purpose" value="Интернет">Интернет
+</td>
+</tr>
+<tr>
+<th>Способ оплаты:</th>
+<td>
+<input type="radio" name="pay" value="Наличными">Наличными
+<input type="radio" name="pay" value="Картой">Картой
+<input type="radio" name="pay" value="Онлайн">Онлайн
+</td>
+</tr>
+<tr>
+<td colspan="2" align="center">
+<input type="submit" value="ОТПРАВИТЬ">
+</td>
+</tr>
+</table>
+</form>
+<hr>
+</div>
+</body>
+</html>
