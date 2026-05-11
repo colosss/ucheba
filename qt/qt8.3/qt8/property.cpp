@@ -1,21 +1,21 @@
 #include "property.h"
 
 Property::Property()
-    : m_id(0),
-    m_rooms(0),
-    m_area(0.0),
-    m_price(0)
+    : m_id(0)
+    , m_rooms(0)
+    , m_area(0.0)
+    , m_price(0)
 {
 }
 
 Property::Property(int id, const QString &type, const QString &address, int rooms, double area, int price, const QString &status)
-    : m_id(id),
-    m_type(type),
-    m_address(address),
-    m_rooms(rooms),
-    m_area(area),
-    m_price(price),
-    m_status(status)
+    : m_id(id)
+    , m_type(type)
+    , m_address(address)
+    , m_rooms(rooms)
+    , m_area(area)
+    , m_price(price)
+    , m_status(status)
 {
 }
 

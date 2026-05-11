@@ -1,17 +1,17 @@
 #include "client.h"
 
 Client::Client()
-    : m_id(0),
-    m_maxBudget(0)
+    : m_id(0)
+    , m_maxBudget(0)
 {
 }
 
 Client::Client(int id, const QString &fullName, const QString &phone, const QString &needType, int maxBudget)
-    : m_id(id),
-    m_fullName(fullName),
-    m_phone(phone),
-    m_needType(needType),
-    m_maxBudget(maxBudget)
+    : m_id(id)
+    , m_fullName(fullName)
+    , m_phone(phone)
+    , m_needType(needType)
+    , m_maxBudget(maxBudget)
 {
 }
 
@@ -38,4 +38,14 @@ QString Client::needType() const
 int Client::maxBudget() const
 {
     return m_maxBudget;
+}
+
+void Client::setMaxBudget(int maxBudget)
+{
+    m_maxBudget = maxBudget;
+}
+
+void Client::changeBudget(int amount)
+{
+    m_maxBudget += amount;
 }

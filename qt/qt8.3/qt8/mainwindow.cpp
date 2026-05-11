@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include "patterns/propertyfactory.h"
+#include "propertyfactory.h"
 
 #include <QAbstractItemView>
 #include <QAction>
@@ -9,12 +9,15 @@
 #include <QDateEdit>
 #include <QHeaderView>
 #include <QLineEdit>
+#include <QLocale>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QStatusBar>
 #include <QTableView>
+#include <QTabWidget>
+#include <QtGlobal>
 #include <QTextBrowser>
 
 static QStandardItem *item(const QString &text)
@@ -25,8 +28,8 @@ static QStandardItem *item(const QString &text)
 }
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     configureTables();
@@ -108,14 +111,15 @@ void MainWindow::removeClientPressed()
 
 void MainWindow::addDealPressed()
 {
+    int propertyId = comboCurrentId(ui->dealPropertyCombo);
     Deal deal(
         ui->dealIdSpin->value(),
         comboCurrentId(ui->dealClientCombo),
-        comboCurrentId(ui->dealPropertyCombo),
+        propertyId,
         ui->dealOperationCombo->currentText(),
         ui->dealDateEdit->date().toString("dd.MM.yyyy"),
-        ui->dealAmountSpin->value(),
-        ui->dealStatusCombo->currentText()
+        agency.propertyPrice(propertyId),
+        "Оформлена"
         );
     QString error;
     if (!agency.addDeal(deal, error)) {
@@ -123,7 +127,7 @@ void MainWindow::addDealPressed()
         return;
     }
     clearDealForm();
-    showMessage("Сделка добавлена");
+    showMessage("Сделка оформлена");
 }
 
 void MainWindow::removeDealPressed()
@@ -135,6 +139,28 @@ void MainWindow::removeDealPressed()
         return;
     }
     showMessage("Сделка удалена");
+}
+
+void MainWindow::completeDealPressed()
+{
+    int id = selectedTableId(ui->dealTableView, dealModel);
+    QString error;
+    if (!agency.completeDeal(id, error)) {
+        QMessageBox::warning(this, "Ошибка", error);
+        return;
+    }
+    showMessage("Сделка выполнена");
+}
+
+void MainWindow::cancelDealPressed()
+{
+    int id = selectedTableId(ui->dealTableView, dealModel);
+    QString error;
+    if (!agency.cancelDeal(id, error)) {
+        QMessageBox::warning(this, "Ошибка", error);
+        return;
+    }
+    showMessage("Сделка отменена");
 }
 
 void MainWindow::showClientDealsPressed()
@@ -194,8 +220,8 @@ void MainWindow::showSummaryPressed()
     text += QString("Объектов: %1\n").arg(agency.properties().size());
     text += QString("Клиентов: %1\n").arg(agency.clients().size());
     text += QString("Сделок: %1\n").arg(agency.deals().size());
-    text += QString("Сумма активных сделок: %1 руб.\n\n").arg(agency.totalRevenue());
-    text += "Связь многие-ко-многим реализована через таблицу сделок: один клиент может иметь несколько сделок, и один объект может участвовать в истории нескольких сделок.";
+    text += QString("Доход по выполненным сделкам: %1\n\n").arg(moneyText(agency.totalRevenue()));
+    text += "Связь многие-ко-многим реализована через таблицу сделок. Сделка связывает клиента и объект недвижимости. При выполнении продажи или аренды сумма сделки автоматически берется из стоимости объекта, бюджет клиента уменьшается, а статус объекта меняется на продан или сдан.";
     ui->summaryBrowser->setText(text);
     ui->tabWidget->setCurrentWidget(ui->tabSearch);
 }
@@ -205,6 +231,12 @@ void MainWindow::tabChanged(int index)
     if (ui->tabWidget->widget(index) == ui->tabSearch) {
         showSummaryPressed();
     }
+}
+
+void MainWindow::updateDealAmount()
+{
+    int price = agency.propertyPrice(comboCurrentId(ui->dealPropertyCombo));
+    ui->dealAmountEdit->setText(moneyText(price));
 }
 
 void MainWindow::configureTables()
@@ -234,7 +266,9 @@ void MainWindow::configureInputs()
     ui->propertyTypeCombo->addItems({"Квартира", "Дом", "Коммерческое помещение", "Участок"});
     ui->clientNeedTypeCombo->addItems({"Квартира", "Дом", "Коммерческое помещение", "Участок"});
     ui->dealOperationCombo->addItems({"Бронь", "Продажа", "Аренда"});
-    ui->dealStatusCombo->addItems({"Оформлена", "Выполнена", "Отменена"});
+    ui->dealStatusCombo->addItem("Оформлена");
+    ui->dealStatusCombo->setEnabled(false);
+    ui->dealAmountEdit->setReadOnly(true);
 
     ui->propertyIdSpin->setMaximum(999999);
     ui->propertyRoomsSpin->setMaximum(30);
@@ -244,9 +278,9 @@ void MainWindow::configureInputs()
     ui->clientIdSpin->setMaximum(999999);
     ui->clientBudgetSpin->setMaximum(1000000000);
     ui->dealIdSpin->setMaximum(999999);
-    ui->dealAmountSpin->setMaximum(1000000000);
     ui->dealDateEdit->setDate(QDate::currentDate());
     ui->dealDateEdit->setCalendarPopup(true);
+    updateDealAmount();
 }
 
 void MainWindow::connectInterface()
@@ -257,6 +291,8 @@ void MainWindow::connectInterface()
     connect(ui->btnRemoveClient, &QPushButton::clicked, this, &MainWindow::removeClientPressed);
     connect(ui->btnAddDeal, &QPushButton::clicked, this, &MainWindow::addDealPressed);
     connect(ui->btnRemoveDeal, &QPushButton::clicked, this, &MainWindow::removeDealPressed);
+    connect(ui->btnCompleteDeal, &QPushButton::clicked, this, &MainWindow::completeDealPressed);
+    connect(ui->btnCancelDeal, &QPushButton::clicked, this, &MainWindow::cancelDealPressed);
     connect(ui->btnShowClientDeals, &QPushButton::clicked, this, &MainWindow::showClientDealsPressed);
     connect(ui->btnShowPropertyDeals, &QPushButton::clicked, this, &MainWindow::showPropertyDealsPressed);
     connect(ui->btnFindMatches, &QPushButton::clicked, this, &MainWindow::findMatchesPressed);
@@ -266,6 +302,7 @@ void MainWindow::connectInterface()
     connect(ui->actionExit, &QAction::triggered, this, &QWidget::close);
     connect(ui->actionSummary, &QAction::triggered, this, &MainWindow::showSummaryPressed);
     connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::tabChanged);
+    connect(ui->dealPropertyCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::updateDealAmount);
 }
 
 void MainWindow::refreshAll()
@@ -290,7 +327,7 @@ void MainWindow::refreshPropertyTable(const QVector<Property> &items)
         row << item(property.address());
         row << item(QString::number(property.rooms()));
         row << item(QString::number(property.area(), 'f', 1));
-        row << item(QString::number(property.price()));
+        row << item(moneyText(property.price()));
         row << item(property.status());
         propertyModel.appendRow(row);
     }
@@ -305,7 +342,7 @@ void MainWindow::refreshClientTable(const QVector<Client> &items)
         row << item(client.fullName());
         row << item(client.phone());
         row << item(client.needType());
-        row << item(QString::number(client.maxBudget()));
+        row << item(moneyText(client.maxBudget()));
         clientModel.appendRow(row);
     }
 }
@@ -320,7 +357,7 @@ void MainWindow::refreshDealTable(const QVector<Deal> &items)
         row << item(QString::number(deal.propertyId()));
         row << item(deal.operation());
         row << item(deal.date());
-        row << item(QString::number(deal.amount()));
+        row << item(moneyText(deal.amount()));
         row << item(deal.status());
         dealModel.appendRow(row);
     }
@@ -336,7 +373,7 @@ void MainWindow::refreshResultTable(const QVector<Property> &items)
         row << item(property.address());
         row << item(QString::number(property.rooms()));
         row << item(QString::number(property.area(), 'f', 1));
-        row << item(QString::number(property.price()));
+        row << item(moneyText(property.price()));
         row << item(property.status());
         resultModel.appendRow(row);
     }
@@ -352,7 +389,7 @@ void MainWindow::fillComboBoxes()
     ui->dealClientCombo->clear();
     ui->filterClientCombo->clear();
     for (const Client &client : agency.clients()) {
-        QString text = QString("%1 - %2").arg(client.id()).arg(client.fullName());
+        QString text = QString("%1 - %2, бюджет %3").arg(client.id()).arg(client.fullName()).arg(moneyText(client.maxBudget()));
         ui->dealClientCombo->addItem(text, client.id());
         ui->filterClientCombo->addItem(text, client.id());
     }
@@ -360,8 +397,8 @@ void MainWindow::fillComboBoxes()
     ui->dealPropertyCombo->clear();
     ui->filterPropertyCombo->clear();
     for (const Property &property : agency.properties()) {
-        QString text = QString("%1 - %2, %3").arg(property.id()).arg(property.type()).arg(property.address());
-        if (property.status() != "Продан" && property.status() != "Сдан") {
+        QString text = QString("%1 - %2, %3, %4").arg(property.id()).arg(property.type()).arg(property.address()).arg(moneyText(property.price()));
+        if (property.status() == "Свободен") {
             ui->dealPropertyCombo->addItem(text, property.id());
         }
         ui->filterPropertyCombo->addItem(text, property.id());
@@ -383,6 +420,7 @@ void MainWindow::fillComboBoxes()
     if (filterPropertyIndex >= 0) {
         ui->filterPropertyCombo->setCurrentIndex(filterPropertyIndex);
     }
+    updateDealAmount();
 }
 
 void MainWindow::clearPropertyForm()
@@ -405,13 +443,18 @@ void MainWindow::clearClientForm()
 void MainWindow::clearDealForm()
 {
     ui->dealIdSpin->setValue(ui->dealIdSpin->value() + 1);
-    ui->dealAmountSpin->setValue(0);
     ui->dealDateEdit->setDate(QDate::currentDate());
+    updateDealAmount();
 }
 
 void MainWindow::showMessage(const QString &message)
 {
     statusBar()->showMessage(message, 4000);
+}
+
+QString MainWindow::moneyText(int value) const
+{
+    return QLocale(QLocale::Russian, QLocale::Russia).toString(value) + " руб.";
 }
 
 int MainWindow::selectedTableId(QTableView *view, const QStandardItemModel &model) const
