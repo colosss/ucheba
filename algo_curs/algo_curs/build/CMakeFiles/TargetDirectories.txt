@@ -1,0 +1,3 @@
+/home/mifugi/ucheba/algo_curs/algo_curs/build/CMakeFiles/algo_curs.dir
+/home/mifugi/ucheba/algo_curs/algo_curs/build/CMakeFiles/edit_cache.dir
+/home/mifugi/ucheba/algo_curs/algo_curs/build/CMakeFiles/rebuild_cache.dir
