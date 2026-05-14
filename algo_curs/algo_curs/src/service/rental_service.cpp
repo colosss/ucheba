@@ -85,12 +85,12 @@ OperationResult RentalService::clearClients() {
 }
 
 const Client* RentalService::findClient(const std::string& licenseNumber) const { return clients.find(licenseNumber); }
-std::vector<Client> RentalService::listClients() const { return clients.getAllInOrder(); }
+std::vector<Client> RentalService::listClients() const { return clients.getAll(); }
 
 std::vector<Client> RentalService::searchClientsByFragment(const std::string& fragment) const {
     std::vector<Client> result;
     if (fragment.empty()) return result;
-    for (const Client& client : clients.getAllPostOrder()) { // вариант 1: обратный обход АВЛ-дерева
+    for (const Client& client : clients.getAll()) { // вариант 1: обратный обход АВЛ-дерева
         if (BoyerMoore::contains(client.getFullName(), fragment) || BoyerMoore::contains(client.getAddress(), fragment)) {
             result.push_back(client);
         }

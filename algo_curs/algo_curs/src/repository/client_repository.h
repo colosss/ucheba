@@ -21,8 +21,7 @@ public:
     void clear();
     size_t size() const;
 
-    std::vector<Client> getAllInOrder() const;
-    std::vector<Client> getAllPostOrder() const;
+    std::vector<Client> getAll() const;
 
     bool loadFromFile(const std::string& filename);
     bool saveToFile(const std::string& filename) const;

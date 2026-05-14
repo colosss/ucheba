@@ -1,0 +1,30 @@
+[project]
+name = "python-labs-6-sem"
+version = "0.1.0"
+description = "Laboratory works for the 6th semester Python course"
+readme = "readme.md"
+requires-python = ">=3.11"
+dependencies = [
+    "matplotlib>=3.8",
+    "pandas>=2.2",
+    "sqlalchemy>=2.0",
+    "xlrd>=2.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = [
+    "lr1/tests",
+    "lr2/tests",
+    "lr3/tests",
+    "lr4/tests",
+    "lr5/tests",
+    "lr6/tests",
+    "lr7/tests",
+]
+addopts = "-q"

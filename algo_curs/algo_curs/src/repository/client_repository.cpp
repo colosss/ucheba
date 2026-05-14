@@ -11,8 +11,7 @@ const Client* ClientRepository::find(const std::string& licenseNumber) const { r
 bool ClientRepository::exists(const std::string& licenseNumber) const { return find(licenseNumber) != nullptr; }
 void ClientRepository::clear() { tree.clear(); }
 size_t ClientRepository::size() const { return tree.size(); }
-std::vector<Client> ClientRepository::getAllInOrder() const { return tree.toVectorInOrder(); }
-std::vector<Client> ClientRepository::getAllPostOrder() const { return tree.toVectorPostOrder(); }
+std::vector<Client> ClientRepository::getAll() const { return tree.toVectorPostOrder(); }
 
 bool ClientRepository::loadFromFile(const std::string& filename) {
     std::ifstream in(filename);
@@ -30,7 +29,7 @@ bool ClientRepository::loadFromFile(const std::string& filename) {
 bool ClientRepository::saveToFile(const std::string& filename) const {
     std::ofstream out(filename);
     if (!out.is_open()) return false;
-    for (const Client& client : getAllInOrder()) out << client.serialize() << '\n';
+    for (const Client& client : getAll()) out << client.serialize() << '\n';
     return true;
 }
 
